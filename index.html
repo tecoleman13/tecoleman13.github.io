@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Ops Audit — Tai Coleman</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow: #F5C842;
+    --yellow-light: #FDF4D0;
+    --yellow-dark: #C49A0A;
+    --black: #111010;
+    --offwhite: #FAFAF7;
+    --warm-gray: #F3F1EC;
+    --mid-gray: #7A786E;
+    --text: #1A1A18;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans: 'DM Sans', sans-serif;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--offwhite);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--black);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--yellow);
+    letter-spacing: -0.01em;
+  }
+  .nav-cta {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: #e8b800; }
+
+  /* HERO */
+  .hero {
+    background: var(--black);
+    color: white;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(245,200,66,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    background: rgba(245,200,66,0.15);
+    border: 1px solid rgba(245,200,66,0.4);
+    color: var(--yellow);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 50px;
+    padding: 0.35rem 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: white;
+    max-width: 720px;
+    margin: 0 auto 1.25rem;
+  }
+  .hero h1 em {
+    color: var(--yellow);
+    font-style: italic;
+  }
+  .hero-sub {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 560px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+  .hero-cta-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    padding: 0.875rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #e8b800; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: white;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1rem;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50px;
+    padding: 0.875rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s;
+    display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.65); }
+
+  .hero-price-note {
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* TRUST BAR */
+  .trust-bar {
+    background: var(--yellow);
+    padding: 1rem 2rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--black);
+    letter-spacing: 0.02em;
+  }
+
+  /* SECTION WRAPPER */
+  .section {
+    padding: 5rem 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+    margin-bottom: 0.75rem;
+  }
+  .section h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .section p {
+    font-size: 1.05rem;
+    color: #3D3C38;
+    line-height: 1.75;
+    max-width: 680px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid #E4E2DC;
+    margin: 0;
+  }
+
+  /* PAIN POINTS */
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+  }
+  .pain-card {
+    background: var(--warm-gray);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    border-left: 3px solid var(--yellow-dark);
+  }
+  .pain-card p {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .pain-card p::before {
+    content: '"';
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    color: var(--yellow-dark);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  /* WHAT YOU GET */
+  .steps {
+    counter-reset: step;
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .step {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    background: var(--yellow);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--black);
+  }
+  .step-content h3 {
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+  }
+  .step-content p {
+    font-size: 0.95rem;
+    color: var(--mid-gray);
+    max-width: 560px;
+  }
+
+  /* OFFER BOX */
+  .offer-section {
+    background: var(--black);
+    padding: 5rem 2rem;
+  }
+  .offer-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .offer-box {
+    background: #1C1B19;
+    border: 1px solid #333;
+    border-radius: var(--radius-lg);
+    padding: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  @media (max-width: 640px) {
+    .offer-box { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+  }
+  .offer-left .eyebrow {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--yellow);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+  .offer-left h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    color: white;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .offer-left p {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+  }
+  .offer-right {
+    background: #252420;
+    border-radius: var(--radius);
+    padding: 2rem;
+    border: 1px solid #3A3930;
+  }
+  .offer-price {
+    margin-bottom: 1.5rem;
+  }
+  .offer-price .label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 0.25rem;
+  }
+  .offer-price .amount {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .offer-price .range {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.4);
+    margin-top: 0.25rem;
+  }
+  .offer-includes {
+    list-style: none;
+    margin-bottom: 1.75rem;
+  }
+  .offer-includes li {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.75);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #333;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .offer-includes li:last-child { border-bottom: none; }
+  .check {
+    width: 18px; height: 18px;
+    background: rgba(245,200,66,0.15);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .check::after {
+    content: '✓';
+    font-size: 10px;
+    color: var(--yellow);
+    font-weight: 700;
+  }
+  .offer-btn {
+    width: 100%;
+    background: var(--yellow);
+    color: var(--black);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .offer-btn:hover { background: #e8b800; transform: translateY(-1px); }
+  .offer-note {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 0.75rem;
+  }
+
+  /* ABOUT */
+  .about-section {
+    background: var(--warm-gray);
+    padding: 5rem 2rem;
+  }
+  .about-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (max-width: 640px) {
+    .about-inner { grid-template-columns: 1fr; }
+  }
+  .about-avatar {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: var(--yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+  .about-text .section-label { margin-bottom: 0.5rem; }
+  .about-text h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  .about-text p {
+    font-size: 1rem;
+    color: #3D3C38;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+    max-width: 560px;
+  }
+
+  /* FAQ */
+  .faq-list {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .faq-item {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid #E4E2DC;
+    padding: 1.5rem;
+  }
+  .faq-item h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .faq-item p {
+    font-size: 0.95rem;
+    color: var(--mid-gray);
+    line-height: 1.65;
+  }
+
+  /* FINAL CTA */
+  .final-cta {
+    background: var(--yellow);
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--black);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    max-width: 640px;
+    margin: 0 auto 1.25rem;
+  }
+  .final-cta p {
+    font-size: 1.05rem;
+    color: rgba(17,16,16,0.65);
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+  }
+  .btn-dark {
+    background: var(--black);
+    color: white;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 2.25rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-dark:hover { background: #2a2928; transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    padding: 2rem;
+    text-align: center;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.3);
+  }
+  footer a { color: rgba(255,255,255,0.45); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Tai Coleman</span>
+  <a href="#offer" class="nav-cta">Book the Ops Audit</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Virtual Operations Consulting</div>
+  <h1>Your practice deserves to run <em>as well as you practice medicine.</em></h1>
+  <p class="hero-sub">If something feels off — the chaos, the bottlenecks, the team confusion — it's not just in your head. Let's find it, name it, and fix it.</p>
+  <div class="hero-cta-group">
+    <a href="#offer" class="btn-primary">Start with the Ops Audit →</a>
+    <a href="#about" class="btn-ghost">Meet Tai</a>
+  </div>
+  <p class="hero-price-note">Starting at $497 · One to two week engagement</p>
+</section>
+
+<div class="trust-bar">
+  Built for physicians running solo and small practices · Clarity in 1–2 weeks · Clear, prioritized action plan included
+</div>
+
+<!-- PAIN POINTS -->
+<div class="section">
+  <p class="section-label">Does this sound familiar?</p>
+  <h2>You know something isn't working. You just can't see it clearly.</h2>
+  <p>Most physicians are too close to the daily chaos to identify the actual source of the friction. Here's what we hear most often:</p>
+  <div class="pain-grid">
+    <div class="pain-card"><p>Something's not working, but I can't put my finger on it."</p></div>
+    <div class="pain-card"><p>I'm doing too much myself and I don't know how to delegate."</p></div>
+    <div class="pain-card"><p>My tools and team don't communicate — everything falls through the cracks."</p></div>
+    <div class="pain-card"><p>I need structure, but I don't know where to start."</p></div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- WHAT YOU GET -->
+<div class="section">
+  <p class="section-label">How the Ops Audit works</p>
+  <h2>A focused diagnostic — not another generic consult.</h2>
+  <p>Over one to two weeks, Tai goes deep on your practice so you don't have to guess anymore.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Workflow review</h3>
+        <p>Tai maps out how your practice actually operates day to day — from patient intake to admin handoffs — and identifies where time and energy are leaking.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Tools & team audit</h3>
+        <p>A close look at your current tech stack and team structure. Are the right people doing the right things? Are your tools helping or adding friction?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Clear action plan delivered</h3>
+        <p>You receive a prioritized, plain-language action plan — not a 40-page report you'll never read. What to fix first, what to hand off, and what to stop doing.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFFER -->
+<section class="offer-section" id="offer">
+  <div class="offer-inner">
+    <div class="offer-box">
+      <div class="offer-left">
+        <span class="eyebrow">The offer</span>
+        <h2>The Ops Audit</h2>
+        <p>A one to two week diagnostic engagement that gives you the clarity to move forward — without the guesswork. Most practice owners walk away knowing exactly what to fix and in what order.</p>
+      </div>
+      <div class="offer-right">
+        <div class="offer-price">
+          <div class="label">Investment</div>
+          <div class="amount">$497</div>
+          <div class="range">Up to $750 depending on practice size</div>
+        </div>
+        <ul class="offer-includes">
+          <li><span class="check"></span>Workflow & process deep-dive</li>
+          <li><span class="check"></span>Tools & team structure review</li>
+          <li><span class="check"></span>1–2 week turnaround</li>
+          <li><span class="check"></span>Prioritized written action plan</li>
+          <li><span class="check"></span>Follow-up debrief call with Tai</li>
+        </ul>
+        <a href="mailto:hello@taicoleman.com?subject=Ops Audit Inquiry" class="offer-btn">Book My Ops Audit →</a>
+        <p class="offer-note">Spots are limited. Reply time within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-inner">
+    <div class="about-avatar">TC</div>
+    <div class="about-text">
+      <p class="section-label">Meet Tai</p>
+      <h2>The operator you didn't know you needed.</h2>
+      <p>Tai Coleman is a Virtual Operations Consultant who helps physicians bring structure, clarity, and flow back to their practice. With a background in business operations, marketing strategy, and team systems, she specializes in seeing what practice owners can't — because they're too close to it.</p>
+      <p>She's built and revived businesses since 2009. She knows what broken ops look like, what they cost, and exactly how to fix them.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- FAQ -->
+<div class="section">
+  <p class="section-label">Questions</p>
+  <h2>Everything you might be wondering.</h2>
+  <div class="faq-list">
+    <div class="faq-item">
+      <h3>Who is this audit designed for?</h3>
+      <p>Physicians running solo or small practices who feel like something isn't working — but can't pinpoint it. If you're doing too much yourself and not sure where to start, this is built for you.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How long does it take?</h3>
+      <p>The full engagement runs one to two weeks, depending on the complexity of your practice. You'll receive your action plan by the end of the engagement.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What do I actually receive at the end?</h3>
+      <p>A clear, prioritized action plan written in plain language — not a bloated report. You'll know what to fix first, what to delegate, and what to stop doing entirely.</p>
+    </div>
+    <div class="faq-item">
+      <h3>What does the $497–$750 range depend on?</h3>
+      <p>Pricing scales with the size and complexity of your practice and team structure. Tai will confirm the exact investment after your initial conversation.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How do I get started?</h3>
+      <p>Click the button below and send Tai a quick note. She responds within 24 hours and will schedule a brief intro call to make sure it's the right fit before you commit.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <h2>Clarity is one audit away.</h2>
+  <p>Stop guessing what's broken. Let's find it, name it, and hand you a plan to fix it — in two weeks or less.</p>
+  <a href="mailto:hello@taicoleman.com?subject=Ops Audit Inquiry" class="btn-dark">Book My Ops Audit →</a>
+</section>
+
+<footer>
+  <p>© 2025 Tai Coleman · Virtual Operations Consulting · <a href="#">Privacy Policy</a></p>
+</footer>
+
+</body>
+</html>
